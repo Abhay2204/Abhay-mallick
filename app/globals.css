@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  /* Base */
+  --color-white: #ffffff;
+  --color-alabaster-grey: #f0eff4;        /* warmer, softer off-white */
+  --color-graphite: #0f0f12;             /* near-black with a cool undertone */
+
+  /* Primary accent — electric violet-indigo */
+  --color-stormy-teal: #7c3aed;          /* replaces dull teal → vivid violet */
+
+  /* Secondary accent — warm amber/gold */
+  --color-yale-blue: #f59e0b;            /* replaces navy → glowing amber */
+
+  /* Extra utility tones */
+  --color-neon-violet: #a855f7;          /* lighter violet for glows */
+  --color-deep-violet: #4c1d95;          /* deep violet for dark sections */
+  --color-ember: #fb923c;               /* warm orange pop */
+}
+
+:root {
+  --white: #ffffff;
+  --alabaster-grey: #f0eff4;
+  --graphite: #0f0f12;
+  --stormy-teal: #7c3aed;
+  --yale-blue: #f59e0b;
+  --neon-violet: #a855f7;
+  --deep-violet: #4c1d95;
+  --ember: #fb923c;
+}
+
+body {
+  background-color: var(--white);
+  color: var(--graphite);
+  overflow-x: hidden;
+}
+
+/* Global selection highlight */
+::selection {
+  background: var(--stormy-teal);
+  color: #fff;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f0f12;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--stormy-teal);
+  border-radius: 9999px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Lenis */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
