@@ -11,9 +11,9 @@ const projects = [
     platform: 'Desktop',
     type: 'Development Tool',
     name: 'Cosmic IDE',
-    description: 'AI-powered code editor with real-time collaboration, intelligent suggestions, and seamless git integration for modern development workflows.',
+    description: 'A professional-grade, AI-native IDE engineered for high-end development. Features integrated multi-language debugging, live code execution, a robust extension ecosystem, and advanced AI agents capable of autonomous file creation, full-stack editing, and intelligent architectural suggestions.',
     year: '2025',
-    tech: ['React', 'Django', 'Electron'],
+    tech: ['React', 'Node.js', 'Electron', 'Gemini API'],
     img: '/images/cosmic ide.png'
   },
   {

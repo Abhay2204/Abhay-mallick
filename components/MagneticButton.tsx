@@ -64,10 +64,12 @@ export default function MagneticButton({
   return (
     <button
       ref={buttonRef}
-      className={`relative inline-flex items-center justify-center px-8 py-4 font-bold tracking-tight uppercase transition-colors duration-300 bg-graphite text-white hover:bg-stormy-teal ${className}`}
+      className={`relative inline-flex items-center justify-center transition-all duration-300 ${className}`}
       {...props}
     >
-      {children}
+      <span className="relative z-10 pointer-events-none">
+        {children}
+      </span>
     </button>
   );
 }

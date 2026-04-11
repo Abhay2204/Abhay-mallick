@@ -6,9 +6,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const baseCol1 = ['REACT', 'NEXT.JS', 'TYPESCRIPT', 'TAILWIND', 'FRAMER', 'GSAP'];
-const baseCol2 = ['JAVA', 'SPRING BOOT', 'NODE.JS', 'POSTGRESQL', 'MICRO SERVICES', 'REST API'];
-const baseCol3 = ['KOTLIN', 'JETPACK', 'ANDROID', 'AWS', 'DOCKER', 'SYSTEM DESIGN'];
+const baseCol1 = ['REACT', 'NEXT.JS', 'TYPESCRIPT', 'TAILWIND', 'VUE.JS', 'GSAP'];
+const baseCol2 = ['NODE.JS', 'EXPRESS JS', 'MONGO DB', 'POSTGRESQL', 'SQL', 'REST API'];
+const baseCol3 = ['ANDROID', 'JETPACK', 'KOTLIN', 'AWS', 'DOCKER', 'SYSTEM DESIGN'];
 const baseCol4 = ['FIGMA', 'UI/UX', 'GIT', 'AGILE', 'ANALYTICS', 'ARCHITECTURE'];
 
 // Repeat arrays to make them extremely long for continuous scrolling

@@ -22,9 +22,9 @@ const timelineData = [
   },
   {
     year: 'Jan 2024 — Jun 2024',
-    role: 'Java Full Stack Trainee',
+    role: 'Full Stack Development Trainee',
     company: 'The Kiran Academy',
-    description: 'Mastered object-oriented programming, enterprise patterns, and full-stack architecture using Java and modern web frameworks.'
+    description: 'Mastered modern web development, architectural patterns, and full-stack integration using JavaScript, Node.js, and Express.js.'
   }
 ];
 
