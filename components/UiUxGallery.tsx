@@ -183,16 +183,6 @@ const galleryItems = [
   },
   {
     id: 18,
-    type: 'youtube',
-    title: 'Technova',
-    ytId: 'ge9iTbVius0',
-    href: 'https://technova-nu.vercel.app/',
-    aspect: 'aspect-[16/9]',
-    gridClass: 'col-span-4 md:col-span-5 md:col-start-6 mt-16 md:mt-24',
-    speed: 1.15,
-  },
-  {
-    id: 19,
     type: 'link',
     title: 'VIEW\nARCHIVE',
     href: 'https://design-by-abhay.vercel.app/',
@@ -234,12 +224,16 @@ const GalleryItem = ({ item }: { item: any }) => {
 
   if (item.type === 'local-video') {
     return (
-      <div 
+      <a 
         key={item.id} 
-        className={`gallery-item ${item.gridClass} ${item.aspect} relative overflow-hidden group bg-black/40 rounded-xl`} 
+        href={item.href || '#'}
+        target={item.href ? "_blank" : undefined}
+        rel={item.href ? "noopener noreferrer" : undefined}
+        className={`gallery-item block ${item.gridClass} ${item.aspect} relative overflow-hidden group bg-black/40 rounded-xl ${item.href ? 'cursor-pointer' : 'cursor-default'}`} 
         data-speed={item.speed}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={(e) => { if (!item.href) e.preventDefault(); }}
       >
         <video
           ref={videoRef}
@@ -256,18 +250,22 @@ const GalleryItem = ({ item }: { item: any }) => {
              </div>
           </div>
         )}
-      </div>
+      </a>
     );
   }
 
   if (item.type === 'youtube') {
     return (
-      <div 
+      <a 
         key={item.id} 
-        className={`gallery-item ${item.gridClass} ${item.aspect} relative overflow-hidden group bg-black/40 rounded-xl`} 
+        href={item.href || '#'}
+        target={item.href ? "_blank" : undefined}
+        rel={item.href ? "noopener noreferrer" : undefined}
+        className={`gallery-item block ${item.gridClass} ${item.aspect} relative overflow-hidden group bg-black/40 rounded-xl ${item.href ? 'cursor-pointer' : 'cursor-default'}`} 
         data-speed={item.speed}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={(e) => { if (!item.href) e.preventDefault(); }}
       >
         {isHovered ? (
           <div className="absolute inset-0 w-full h-full pointer-events-none">
@@ -299,7 +297,7 @@ const GalleryItem = ({ item }: { item: any }) => {
               {item.title}
             </div>
         </div>
-      </div>
+      </a>
     );
   }
 
