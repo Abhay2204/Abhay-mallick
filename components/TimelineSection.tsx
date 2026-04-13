@@ -155,7 +155,7 @@ export default function TimelineSection() {
               )}
 
               {/* laptop3.png isolated centering wrapper */}
-              {item.role === 'Java Full Stack Trainee' && (
+              {item.role === 'Full Stack Development Trainee' && (
                 <div className="absolute right-0 md:right-[2vw] top-0 bottom-0 pointer-events-none z-[-1] w-[200px] md:w-[450px] flex items-center justify-center">
                   <div className="laptop-img w-full h-auto">
                     <img 
