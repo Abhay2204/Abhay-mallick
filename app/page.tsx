@@ -12,9 +12,11 @@ import UiUxGallery from '@/components/UiUxGallery';
 import Footer from '@/components/Footer';
 import MobileView from '@/components/MobileView';
 import ChatWidget from '@/components/ChatWidget';
+import LoadingScreen from '@/components/LoadingScreen';
 
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -28,6 +30,12 @@ export default function Home() {
   return (
     <>
       <AnimatePresence>
+        {isLoading && (
+          <LoadingScreen key="loader" onComplete={() => setIsLoading(false)} />
+        )}
+      </AnimatePresence>
+
+      <div className={`${isLoading ? 'h-screen overflow-hidden' : ''} relative z-0`}>
         {isMobile ? (
           <MobileView key="mobile" />
         ) : (
@@ -45,7 +53,7 @@ export default function Home() {
             </main>
           </div>
         )}
-      </AnimatePresence>
+      </div>
     </>
   );
 }
