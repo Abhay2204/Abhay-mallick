@@ -92,6 +92,7 @@ interface Message {
   id: number;
   sender: 'abhay' | 'user';
   text: string;
+  reasoning?: string;
 }
 
 export default function ChatWidget() {
@@ -102,6 +103,7 @@ export default function ChatWidget() {
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [buttonCount, setButtonCount] = useState<Record<string, number>>({});
+  const [input, setInput] = useState("");
   
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -168,6 +170,86 @@ export default function ChatWidget() {
     setIsTyping(false);
     const postActions: (keyof typeof AVATAR_ASSETS)[] = ['speaker', 'stretch', 'yawn'];
     playVideo(postActions[Math.floor(Math.random() * postActions.length)]);
+  };
+
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!input.trim() || isTyping) return;
+
+    const userText = input;
+    const userMsg: Message = { id: Date.now(), sender: 'user', text: userText };
+    
+    setInput("");
+    setMessages(prev => [...prev, userMsg]);
+    setIsTyping(true);
+    playVideo('typing');
+
+    const responseId = Date.now() + 1;
+    setMessages(prev => [...prev, { id: responseId, sender: 'abhay', text: "", reasoning: "" }]);
+
+    try {
+      const chatHistory = messages.map(m => ({
+        role: m.sender === 'abhay' ? 'assistant' : 'user',
+        content: m.text
+      }));
+      chatHistory.push({ role: 'user', content: userText });
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chatHistory }),
+      });
+
+      if (response.status === 429) {
+        setMessages(prev => prev.map(m => m.id === responseId ? { ...m, text: "Whoa there! I'm getting too many requests. Let's take a quick breather (1 minute) before chatting more! ☕" } : m));
+        setIsTyping(false);
+        return;
+      }
+
+      if (!response.ok) throw new Error('Failed to fetch response');
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No reader available');
+
+      const decoder = new TextDecoder();
+      let fullText = "";
+      let fullReasoning = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') break;
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.reasoning) {
+                fullReasoning += parsed.reasoning;
+                setMessages(prev => prev.map(m => m.id === responseId ? { ...m, reasoning: fullReasoning } : m));
+              }
+              if (parsed.content) {
+                fullText += parsed.content;
+                setMessages(prev => prev.map(m => m.id === responseId ? { ...m, text: fullText } : m));
+              }
+            } catch (e) {
+              // Ignore parse errors for incomplete chunks
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Chat Error:', error);
+      setMessages(prev => prev.map(m => m.id === responseId ? { ...m, text: "I'm having some trouble connecting to my brain right now. Please try again later!" } : m));
+    } finally {
+      setIsTyping(false);
+      const postActions: (keyof typeof AVATAR_ASSETS)[] = ['speaker', 'stretch', 'yawn'];
+      playVideo(postActions[Math.floor(Math.random() * postActions.length)]);
+    }
   };
 
   return (
@@ -249,8 +331,14 @@ export default function ChatWidget() {
                             key={msg.id}
                             initial={{ opacity: 0, x: msg.sender === 'abhay' ? -20 : 20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className={`flex ${msg.sender === 'abhay' ? 'justify-start' : 'justify-end'}`}
+                            className={`flex flex-col ${msg.sender === 'abhay' ? 'items-start' : 'items-end'}`}
                         >
+                            {msg.sender === 'abhay' && msg.reasoning && (
+                                <div className="max-w-[80%] mb-2 px-4 py-2 bg-gray-50 border-l-2 border-teal-500 text-[11px] text-gray-500 italic rounded-r-xl">
+                                    <span className="font-bold text-[9px] uppercase tracking-widest text-teal-600 block mb-1">Thinking...</span>
+                                    {msg.reasoning}
+                                </div>
+                            )}
                             <div 
                                 className={`max-w-[85%] px-5 py-3 rounded-3xl text-[13px] leading-relaxed shadow-sm ${
                                     msg.sender === 'abhay' 
@@ -274,22 +362,32 @@ export default function ChatWidget() {
                 </div>
 
                 {/* Footer Controls */}
-                <div className="p-8 bg-gray-50/50 border-t border-gray-50">
-                    <div className="grid grid-cols-2 gap-3">
-                        <button onClick={() => handleAction('me')} className="px-4 py-3 bg-white hover:bg-gray-50 active:scale-95 transition-all rounded-xl text-[10px] font-black uppercase tracking-widest text-graphite shadow-sm border border-gray-100">
-                            🧔 WHO IS ABHAY?
+                <div className="p-6 bg-gray-50/50 border-t border-gray-50 space-y-4">
+                    {/* Input Field */}
+                    <form onSubmit={handleSendMessage} className="relative flex items-center gap-2">
+                        <input
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder="Ask me anything..."
+                            className="flex-1 bg-white border border-gray-200 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-graphite/10 transition-all"
+                            disabled={isTyping}
+                        />
+                        <button
+                            type="submit"
+                            disabled={isTyping || !input.trim()}
+                            className="bg-graphite text-white p-4 rounded-2xl hover:bg-black disabled:opacity-50 transition-all active:scale-95"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                         </button>
-                        <button onClick={() => handleAction('experience')} className="px-4 py-3 bg-white hover:bg-gray-50 active:scale-95 transition-all rounded-xl text-[10px] font-black uppercase tracking-widest text-graphite shadow-sm border border-gray-100">
-                            💼 EXPERIENCE
+                    </form>
+
+                    <div className="grid grid-cols-2 gap-2 opacity-60 hover:opacity-100 transition-opacity">
+                        <button type="button" onClick={() => handleAction('me')} className="px-3 py-2 bg-white hover:bg-gray-50 rounded-xl text-[9px] font-black uppercase tracking-widest text-graphite border border-gray-100">
+                            🧔 BIO
                         </button>
-                        <button onClick={() => handleAction('tech')} className="px-4 py-3 bg-white hover:bg-gray-50 active:scale-95 transition-all rounded-xl text-[10px] font-black uppercase tracking-widest text-graphite shadow-sm border border-gray-100">
-                            ⚡ TECH STACK
-                        </button>
-                        <button onClick={() => handleAction('projects')} className="px-4 py-3 bg-white hover:bg-gray-50 active:scale-95 transition-all rounded-xl text-[10px] font-black uppercase tracking-widest text-graphite shadow-sm border border-gray-100">
-                            🚀 SELECTED WORKS
-                        </button>
-                        <button onClick={() => handleAction('contact')} className="px-6 py-4 bg-graphite text-white hover:bg-black active:scale-95 transition-all rounded-xl text-[11px] font-black uppercase tracking-[0.2em] col-span-2 flex items-center justify-center gap-3 border-b-4 border-black shadow-xl">
-                            ✉️ REACH OUT TO ABHAY
+                        <button type="button" onClick={() => handleAction('experience')} className="px-3 py-2 bg-white hover:bg-gray-50 rounded-xl text-[9px] font-black uppercase tracking-widest text-graphite border border-gray-100">
+                            💼 EXP
                         </button>
                     </div>
                 </div>

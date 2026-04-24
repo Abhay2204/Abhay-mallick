@@ -92,6 +92,7 @@ interface Message {
   id: number;
   sender: 'abhay' | 'user';
   text: string;
+  reasoning?: string;
 }
 
 export default function MobileView() {
@@ -101,6 +102,7 @@ export default function MobileView() {
   const [currentVideo, setCurrentVideo] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [buttonCount, setButtonCount] = useState<Record<string, number>>({});
+  const [input, setInput] = useState("");
   
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -179,6 +181,84 @@ export default function MobileView() {
     playVideo(randomAction);
   };
 
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!input.trim() || isTyping) return;
+
+    const userText = input;
+    const userMsg: Message = { id: Date.now(), sender: 'user', text: userText };
+    
+    setInput("");
+    setMessages(prev => [...prev, userMsg]);
+    setIsTyping(true);
+    playVideo('typing');
+
+    const responseId = Date.now() + 1;
+    setMessages(prev => [...prev, { id: responseId, sender: 'abhay', text: "", reasoning: "" }]);
+
+    try {
+      const chatHistory = messages.map(m => ({
+        role: m.sender === 'abhay' ? 'assistant' : 'user',
+        content: m.text
+      }));
+      chatHistory.push({ role: 'user', content: userText });
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: chatHistory }),
+      });
+
+      if (response.status === 429) {
+        setMessages(prev => prev.map(m => m.id === responseId ? { ...m, text: "Taking too many requests! Please wait a minute. ☕" } : m));
+        setIsTyping(false);
+        return;
+      }
+
+      if (!response.ok) throw new Error('Failed to fetch response');
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No reader available');
+
+      const decoder = new TextDecoder();
+      let fullText = "";
+      let fullReasoning = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') break;
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.reasoning) {
+                fullReasoning += parsed.reasoning;
+                setMessages(prev => prev.map(m => m.id === responseId ? { ...m, reasoning: fullReasoning } : m));
+              }
+              if (parsed.content) {
+                fullText += parsed.content;
+                setMessages(prev => prev.map(m => m.id === responseId ? { ...m, text: fullText } : m));
+              }
+            } catch (e) {}
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Chat Error:', error);
+      setMessages(prev => prev.map(m => m.id === responseId ? { ...m, text: "I'm having some trouble connecting right now." } : m));
+    } finally {
+      setIsTyping(false);
+      const postActions: (keyof typeof AVATAR_ASSETS)[] = ['speaker', 'stretch', 'yawn'];
+      playVideo(postActions[Math.floor(Math.random() * postActions.length)]);
+    }
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (!isTyping && !currentVideo) {
@@ -198,8 +278,13 @@ export default function MobileView() {
               key={msg.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`flex ${msg.sender === 'abhay' ? 'justify-start' : 'justify-end'}`}
+              className={`flex flex-col ${msg.sender === 'abhay' ? 'items-start' : 'items-end'}`}
             >
+              {msg.sender === 'abhay' && msg.reasoning && (
+                <div className="max-w-[80%] mb-2 px-3 py-1 bg-gray-50 border-l-2 border-teal-500 text-[10px] text-gray-500 italic rounded-r-xl">
+                  {msg.reasoning}
+                </div>
+              )}
               <div
                 className={`max-w-[85%] px-4 py-3 rounded-2xl text-[12px] leading-relaxed shadow-sm ${msg.sender === 'abhay'
                     ? 'bg-gray-50 text-graphite border border-gray-100 rounded-tl-none'
@@ -234,22 +319,30 @@ export default function MobileView() {
         </div>
       </div>
 
-      <div className="px-4 py-4 bg-white pb-12">
-        <div className="grid grid-cols-2 gap-2">
-          <button onClick={() => handleAction('me')} className="px-3 py-3 bg-gray-50 active:scale-95 transition-all rounded-xl text-[10px] font-black uppercase tracking-wider text-graphite border border-gray-200">
-            🧔 Who is Abhay?
+      <div className="px-4 py-4 bg-white border-t border-gray-100 space-y-3">
+        <form onSubmit={handleSendMessage} className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type a message..."
+            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[13px] focus:outline-none"
+            disabled={isTyping}
+          />
+          <button
+            type="submit"
+            disabled={isTyping || !input.trim()}
+            className="bg-graphite text-white px-4 rounded-xl active:scale-95 transition-all"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           </button>
-          <button onClick={() => handleAction('experience')} className="px-3 py-3 bg-gray-50 active:scale-95 transition-all rounded-xl text-[10px] font-black uppercase tracking-wider text-graphite border border-gray-200">
-            💼 Experience
+        </form>
+        <div className="grid grid-cols-2 gap-2 opacity-50">
+          <button onClick={() => handleAction('me')} className="px-2 py-2 bg-gray-50 rounded-lg text-[9px] font-black uppercase text-graphite border border-gray-200">
+            🧔 BIO
           </button>
-          <button onClick={() => handleAction('tech')} className="px-3 py-3 bg-gray-50 active:scale-95 transition-all rounded-xl text-[10px] font-black uppercase tracking-wider text-graphite border border-gray-200">
-            ⚡ Tech Stack
-          </button>
-          <button onClick={() => handleAction('projects')} className="px-3 py-3 bg-gray-50 active:scale-95 transition-all rounded-xl text-[10px] font-black uppercase tracking-wider text-graphite border border-gray-200">
-            🚀 Selected Works
-          </button>
-          <button onClick={() => handleAction('contact')} className="px-4 py-3 bg-graphite text-white active:scale-95 transition-all rounded-xl text-[11px] font-black uppercase tracking-widest col-span-2 flex items-center justify-center gap-2 border-b-4 border-black">
-            ✉️ REACH OUT
+          <button onClick={() => handleAction('experience')} className="px-2 py-2 bg-gray-50 rounded-lg text-[9px] font-black uppercase text-graphite border border-gray-200">
+            💼 EXP
           </button>
         </div>
       </div>
