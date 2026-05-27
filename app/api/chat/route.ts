@@ -1,11 +1,8 @@
 import { OpenAI } from 'openai';
 import { NextRequest } from 'next/server';
 
-// Initialize the OpenAI client with NVIDIA settings
-const client = new OpenAI({
-  apiKey: process.env.NVIDIA_API_KEY,
-  baseURL: 'https://integrate.api.nvidia.com/v1',
-});
+// Force this route to be dynamic — never pre-rendered at build time
+export const dynamic = 'force-dynamic';
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number, lastReset: number }>();
@@ -35,6 +32,12 @@ export async function POST(req: NextRequest) {
     }
 
     const { messages } = await req.json();
+
+    // Lazy-init: client is created per-request so the module can be imported at build time
+    const client = new OpenAI({
+      apiKey: process.env.NVIDIA_API_KEY,
+      baseURL: 'https://integrate.api.nvidia.com/v1',
+    });
 
     const response = await client.chat.completions.create({
       model: 'deepseek-ai/deepseek-v3.2',

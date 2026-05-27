@@ -41,15 +41,19 @@ export default function Home() {
         ) : (
           <div key="desktop">
             <ChatWidget />
-            <main className="w-full min-h-screen bg-white">
+            <main id="main-content" className="w-full min-h-screen bg-white" aria-label="Abhay Mallick Portfolio">
+              {/* SEO: Visually hidden h1 for crawlers — hero text is JS-driven and invisible to search engines */}
+              <h1 className="sr-only">
+                Abhay Mallick — Full Stack Developer, Freelancer &amp; Project Developer | Next.js, React, Node.js
+              </h1>
               <HeroSection />
-              <AboutSection />
-              <ExpertiseSection />
-              <SkillsSection />
-              <TimelineSection />
-              <ProjectsSection />
-              <UiUxGallery />
-              <Footer />
+              <section id="about" aria-label="About Abhay Mallick"><AboutSection /></section>
+              <section id="expertise" aria-label="Core Expertise"><ExpertiseSection /></section>
+              <section id="skills" aria-label="Skills & Technologies"><SkillsSection /></section>
+              <section id="timeline" aria-label="Career Timeline"><TimelineSection /></section>
+              <section id="projects" aria-label="Projects Portfolio"><ProjectsSection /></section>
+              <section id="gallery" aria-label="UI/UX Design Gallery"><UiUxGallery /></section>
+              <section id="contact" aria-label="Contact Abhay Mallick"><Footer /></section>
             </main>
           </div>
         )}

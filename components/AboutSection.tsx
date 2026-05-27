@@ -6,9 +6,9 @@ import HyperTextParagraph from '@/components/ui/hyper-text-with-decryption';
 import { motion } from 'framer-motion';
 
 export default function AboutSection() {
-  const bio = "I am Abhay_Mallick, a Computer Science Engineer and Full Stack Developer passionate about building robust web and mobile applications. From highly performant Next.js and React interfaces to scalable Node.js/Express backends, I turn complex problems into efficient, production-ready software.";
+  const bio = "I am Abhay Mallick, a Computer Science Engineer, Full Stack Developer & Freelancer passionate about building robust web and mobile applications. From high-performance Next.js and React interfaces to scalable Node.js/Express backends and MongoDB databases, I turn complex problems into efficient, production-ready software — available for freelance projects worldwide.";
 
-  const triggers = ["Abhay_Mallick", "Engineer", "Developer", "passionate", "Next.js", "React", "Node.js", "MongoDB", "AWS", "scalable"];
+  const triggers = ["Abhay Mallick", "Engineer", "Developer", "Freelancer", "passionate", "Next.js", "React", "Node.js", "MongoDB", "scalable", "freelance"];
 
   return (
     <section className="relative w-full py-32 md:py-48 bg-alabaster-grey text-graphite overflow-hidden">

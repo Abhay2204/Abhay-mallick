@@ -1,0 +1,25 @@
+{
+  "name": "Abhay Mallick | Full Stack Developer & Freelancer",
+  "short_name": "Abhay Mallick",
+  "description": "Portfolio of Abhay Mallick — Full Stack Developer, Freelancer & Project Developer from India.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a2332",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["portfolio", "technology", "developer"],
+  "lang": "en-IN"
+}

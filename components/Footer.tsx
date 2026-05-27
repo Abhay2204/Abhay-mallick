@@ -26,7 +26,15 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="w-full bg-graphite text-white relative overflow-hidden pt-32 pb-8">
+    <footer
+      className="w-full bg-graphite text-white relative overflow-hidden pt-32 pb-8"
+      itemScope
+      itemType="https://schema.org/Person"
+      aria-label="Contact Abhay Mallick"
+    >
+      {/* Hidden structured data for Google */}
+      <span itemProp="name" className="sr-only">Abhay Mallick</span>
+      <span itemProp="jobTitle" className="sr-only">Full Stack Developer</span>
       <SwissGrid>
         {/* Top Section: Let's Collaborate */}
         <div className="col-span-4 md:col-span-8 lg:col-span-12 flex flex-col md:flex-row items-start md:items-end justify-between border-b border-white/20 pb-16 gap-12">
@@ -69,12 +77,19 @@ export default function Footer() {
             <h4 className="font-mono text-xs uppercase tracking-widest text-white/50">Socials</h4>
             <ul className="flex flex-col gap-2 text-lg font-medium">
               {[
-                { name: 'GitHub', url: 'https://github.com/Abhay2204' },
-                { name: 'LinkedIn', url: 'https://www.linkedin.com/in/abhaymallick2002' },
-                { name: 'Instagram', url: 'https://www.instagram.com/abhay_as_u_like_it/' }
+                { name: 'GitHub', url: 'https://github.com/Abhay2204', label: 'Abhay Mallick on GitHub', itemProp: 'url' },
+                { name: 'LinkedIn', url: 'https://www.linkedin.com/in/abhaymallick2002', label: 'Abhay Mallick on LinkedIn', itemProp: 'sameAs' },
+                { name: 'Instagram', url: 'https://www.instagram.com/abhay_as_u_like_it/', label: 'Abhay Mallick on Instagram', itemProp: 'sameAs' }
               ].map((social) => (
                 <li key={social.name}>
-                  <a href={social.url} target="_blank" rel="noopener noreferrer" className="relative overflow-hidden group inline-block">
+                  <a
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    itemProp={social.itemProp}
+                    className="relative overflow-hidden group inline-block"
+                  >
                     <span className="block transition-transform duration-300 group-hover:-translate-y-full">{social.name}</span>
                     <span className="block absolute top-0 left-0 translate-y-full transition-transform duration-300 group-hover:translate-y-0 text-stormy-teal">{social.name}</span>
                   </a>
@@ -83,11 +98,11 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6" itemScope itemType="https://schema.org/PostalAddress">
             <h4 className="font-mono text-xs uppercase tracking-widest text-white/50">Location</h4>
             <div className="text-lg font-medium">
-              <p>Chandrapur, Maharashtra</p>
-              <p>India</p>
+              <p itemProp="addressLocality">Chandrapur, Maharashtra</p>
+              <p itemProp="addressCountry">India</p>
               <p className="mt-4 font-mono text-sm text-stormy-teal">{time}</p>
             </div>
           </div>
@@ -95,10 +110,15 @@ export default function Footer() {
           <div className="flex flex-col gap-6">
             <h4 className="font-mono text-xs uppercase tracking-widest text-white/50">Direct</h4>
             <div className="text-lg font-medium">
-              <a href="mailto:abhaymallick.dev@gmail.com" className="hover:text-stormy-teal transition-colors duration-300">
+              <a
+                href="mailto:abhaymallick.dev@gmail.com"
+                itemProp="email"
+                aria-label="Send email to Abhay Mallick"
+                className="hover:text-stormy-teal transition-colors duration-300"
+              >
                 abhaymallick.dev@gmail.com
               </a>
-              <p className="mt-2 text-white/70">+91 84218 22204</p>
+              <p className="mt-2 text-white/70" itemProp="telephone">+91 84218 22204</p>
             </div>
           </div>
         </div>

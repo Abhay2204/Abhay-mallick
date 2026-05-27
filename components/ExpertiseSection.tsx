@@ -12,6 +12,7 @@ const expertiseData = [
     title: 'UI/UX Design',
     subtitle: 'Pixel-Perfect Interfaces',
     img: '/images/uiux1.png',
+    alt: 'Abhay Mallick UI/UX Design Work — Pixel-Perfect Interface Design',
     align: 'center'
   },
   {
@@ -19,6 +20,7 @@ const expertiseData = [
     title: 'Full Stack Dev',
     subtitle: 'Next.js, Express, MongoDB, React ',
     img: '/images/tafeCrm.png',
+    alt: 'Abhay Mallick Full Stack Development — TAFE CRM Project built with Next.js and MongoDB',
     align: 'start'
   },
   {
@@ -26,6 +28,7 @@ const expertiseData = [
     title: 'Mobile Apps',
     subtitle: 'Kotlin & Jetpack Compose',
     img: '/images/health%20tracker.png',
+    alt: 'Abhay Mallick Mobile App Development — Health Tracker App with Kotlin & Jetpack Compose',
     align: 'end'
   },
   {
@@ -33,6 +36,7 @@ const expertiseData = [
     title: 'AI Solutions',
     subtitle: 'Intelligent Integrations',
     img: '/images/insightflow.png',
+    alt: 'Abhay Mallick AI Solutions — InsightFlow Intelligent AI Integration Project',
     align: 'center'
   },
   {
@@ -40,6 +44,7 @@ const expertiseData = [
     title: 'API & Analytics',
     subtitle: 'Data-Driven Architecture',
     img: '/images/dsa%20guru.png',
+    alt: 'Abhay Mallick API & Analytics — DSA Guru Data-Driven Architecture Project',
     align: 'start'
   },
   {
@@ -47,6 +52,7 @@ const expertiseData = [
     title: 'System Design',
     subtitle: 'Scalable Infrastructure',
     img: '/images/devos.png',
+    alt: 'Abhay Mallick System Design — Scalable Infrastructure DevOps Project',
     align: 'end'
   },
 ];
@@ -128,7 +134,9 @@ export default function ExpertiseSection() {
               `}>
                 <img
                   src={item.img}
-                  alt={item.title}
+                  alt={item.alt}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-contain rounded-2xl drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)] opacity-80 hover:opacity-100 filter grayscale hover:grayscale-0 transition-all duration-500"
                 />
               </div>
