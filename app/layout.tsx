@@ -93,8 +93,7 @@ export const metadata: Metadata = {
   },
 
   verification: {
-    // Add your Google Search Console verification token once you verify your site
-    // google: 'YOUR_GOOGLE_VERIFICATION_TOKEN',
+    google: 'EyA8e9tGGxU34-rICF_oQ3Hyw7FFog5K395fgBp_rDo',
   },
 
   category: 'technology',
